@@ -4,7 +4,7 @@ import './App.css';
 import image_1 from "./images/s1.jpg"
 import image_2 from "./images/s2.jpg"
 import image_3 from "./images/s4.jpg"
-import logo from "./images/logo.png"
+import logo from "./images/logo1.png"
 import { FaWhatsapp } from 'react-icons/fa'; // Import WhatsApp icon from react-icons
 
 
