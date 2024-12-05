@@ -10,6 +10,60 @@ import { FaWhatsapp } from 'react-icons/fa'; // Import WhatsApp icon from react-
 
 function App() {
   // Form 
+  // const [formData, setFormData] = useState({
+  //   name: "",
+  //   email: "",
+  //   contactNumber: "",
+  //   purpose: "",
+  //   district: "",
+  // });
+
+
+  // const handleChange = (e) => {
+  //   const { name, value } = e.target;
+  //   setFormData({ ...formData, [name]: value });
+  // };
+
+  // const handleSubmit = (e) => {
+  //   e.preventDefault();
+
+  //   // Validation for required fields
+  //   if (!formData.name || !formData.email || !formData.contactNumber || !formData.purpose || !formData.district) {
+  //     alert("All fields are required!");
+  //     return;
+  //   }
+
+  //   const emailParamsToOwner = {
+  //     from_name: formData.name,
+  //     from_email: formData.email,
+  //     from_phone: formData.contactNumber,
+  //     message: `Purpose: ${formData.purpose}, District: ${formData.district}`,
+  //     to_name: "Owner", // You can change this if needed
+  //   };
+
+  //   // Logging the parameters for debugging
+  //   console.log("Sending email with parameters: ", emailParamsToOwner);
+
+  //   emailjs
+  //     .send(
+  //       "service_c5hhdmj",  // Your service ID
+  //       "template_fey2i9h",  // Your template ID
+  //       emailParamsToOwner,  // Parameters you pass to the template
+  //       "139bcTk_zdGngQxy-"  // Your user ID
+  //     )
+  //     .then(() => {
+  //       alert("Thank you! We'll contact you soon.");
+  //       setFormData({
+  //         name: "",
+  //         email: "",
+  //         contactNumber: "",
+  //         purpose: "",
+  //         district: "",
+  //       });
+  //     })
+  //     .catch(() => alert("Failed to send message to the owner."));
+  // };
+
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -17,6 +71,39 @@ function App() {
     purpose: "",
     district: "",
   });
+  const [captcha, setCaptcha] = useState(generateCaptcha());
+  const [userCaptcha, setUserCaptcha] = useState("");
+
+  const tamilNaduDistricts = [
+    "Chennai",
+    "Coimbatore",
+    "Madurai",
+    "Salem",
+    "Tiruchirappalli",
+    "Tirunelveli",
+    "Erode",
+    "Vellore",
+    "Thanjavur",
+    "Thoothukudi",
+    "Dindigul",
+    "Karur",
+    "Cuddalore",
+    "Tiruppur",
+    "Nagapattinam",
+    "Ramanathapuram",
+    "Kanchipuram",
+    "Krishnagiri",
+    "Virudhunagar",
+  ];
+
+  function generateCaptcha() {
+    const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+    let captcha = "";
+    for (let i = 0; i < 6; i++) {
+      captcha += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+    return captcha;
+  }
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -32,23 +119,28 @@ function App() {
       return;
     }
 
+    // Captcha validation
+    if (userCaptcha !== captcha) {
+      alert("Invalid captcha! Please try again.");
+      setCaptcha(generateCaptcha()); // Refresh captcha on failure
+      setUserCaptcha("");
+      return;
+    }
+
     const emailParamsToOwner = {
       from_name: formData.name,
       from_email: formData.email,
       from_phone: formData.contactNumber,
       message: `Purpose: ${formData.purpose}, District: ${formData.district}`,
-      to_name: "Owner", // You can change this if needed
+      to_name: "Owner",
     };
-
-    // Logging the parameters for debugging
-    console.log("Sending email with parameters: ", emailParamsToOwner);
 
     emailjs
       .send(
-        "service_c5hhdmj",  // Your service ID
-        "template_fey2i9h",  // Your template ID
-        emailParamsToOwner,  // Parameters you pass to the template
-        "139bcTk_zdGngQxy-"  // Your user ID
+        "service_c5hhdmj", // Your service ID
+        "template_fey2i9h", // Your template ID
+        emailParamsToOwner,
+        "139bcTk_zdGngQxy-" // Your user ID
       )
       .then(() => {
         alert("Thank you! We'll contact you soon.");
@@ -59,16 +151,18 @@ function App() {
           purpose: "",
           district: "",
         });
+        setCaptcha(generateCaptcha()); // Refresh captcha on success
+        setUserCaptcha("");
       })
       .catch(() => alert("Failed to send message to the owner."));
   };
 
-  const tamilNaduDistricts = [
-    "Chennai", "Coimbatore", "Madurai", "Salem", "Tiruchirappalli",
-    "Tirunelveli", "Erode", "Vellore", "Thanjavur", "Thoothukudi",
-    "Dindigul", "Karur", "Cuddalore", "Tiruppur", "Nagapattinam",
-    "Ramanathapuram", "Kanchipuram", "Krishnagiri", "Virudhunagar",
-  ];
+  // const tamilNaduDistricts = [
+  //   "Chennai", "Coimbatore", "Madurai", "Salem", "Tiruchirappalli",
+  //   "Tirunelveli", "Erode", "Vellore", "Thanjavur", "Thoothukudi",
+  //   "Dindigul", "Karur", "Cuddalore", "Tiruppur", "Nagapattinam",
+  //   "Ramanathapuram", "Kanchipuram", "Krishnagiri", "Virudhunagar",
+  // ];
 
   // Whatsapp
   const phoneNumber = '7708330249'; // Example: '+11234567890'
@@ -82,6 +176,7 @@ function App() {
   return (
 
     <>
+
       <header>
         <div className='container header'>
           <nav class="navbar navbar-expand-lg pt-1 pb-1">
@@ -94,7 +189,32 @@ function App() {
                 <div class="navbar-nav">
                   <a class="nav-link active" aria-current="page" href="#">Home</a>
                   <a class="nav-link" href="#about-us">About Us</a>
-                  <a class="nav-link" href="#what-we-do">What we do</a>
+                  {/* <a class="nav-link" href="#what-we-do">What we do</a> */}
+
+                  <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                     our services
+                    </a>
+                    <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+                      <li><a class="dropdown-item" href="#">DGPS Survey</a></li>
+                      <li><a class="dropdown-item" href="#">Topographic Survey</a></li>
+                      <li><a class="dropdown-item" href="#">Boundary Survey</a></li>
+                      <li><a class="dropdown-item" href="#">Subdivision Survey</a></li>
+                      <li><a class="dropdown-item" href="#">Mining</a></li>
+                      <li><a class="dropdown-item" href="#">GIS Survey</a></li>
+                      <li><a class="dropdown-item" href="#">Pipeline Survey</a></li>
+                      <li><a class="dropdown-item" href="#">Road Survey</a></li>
+                      <li><a class="dropdown-item" href="#">As-Built Survey</a></li>
+                      <li><a class="dropdown-item" href="#">Contour Survey</a></li>
+                      <li><a class="dropdown-item" href="#">Layout Mapping Survey</a></li>
+                      <li><a class="dropdown-item" href="#">Setting Out Survey</a></li>
+                      <li><a class="dropdown-item" href="#">Cadastral Survey</a></li>
+                      <li><a class="dropdown-item" href="#">Geotechnical Investigation</a></li>
+                      <li><a class="dropdown-item" href="#">Solar Plant Survey</a></li>
+                    </ul>
+                  </li>
+
+
                   <a class="nav-link" href="#testimonial">Our Clients</a>
                   <a class="nav-link" href="#contact-us">Contact Us</a>
                 </div>
@@ -495,112 +615,152 @@ function App() {
             <div className='col-lg-6 col-md-6 col-sm-12 content-col'>
               <p className='mb-3'>Contact Us</p>
               <h2 className='mb-5'>Get in Touch With us</h2>
+              
               <form onSubmit={handleSubmit} className="needs-validation" noValidate>
-                <div className="mb-3">
-                  <label htmlFor="name" className="form-label">
-                    Name
-                  </label>
-                  <input
-                    type="text"
-                    id="name"
-                    name="name"
-                    value={formData.name}
-                    onChange={handleChange}
-                    className="form-control"
-                    placeholder="Enter your name"
-                    required
-                  />
-                </div>
+            <div className="mb-3">
+              <label htmlFor="name" className="form-label">
+                Name
+              </label>
+              <input
+                type="text"
+                id="name"
+                name="name"
+                value={formData.name}
+                onChange={handleChange}
+                className="form-control"
+                placeholder="Enter your name"
+                required
+              />
+            </div>
 
-                <div className="mb-3">
-                  <label htmlFor="email" className="form-label">
-                    Email
-                  </label>
-                  <input
-                    type="email"
-                    id="email"
-                    name="email"
-                    value={formData.email}
-                    onChange={handleChange}
-                    className="form-control"
-                    placeholder="Enter your email"
-                    required
-                  />
-                </div>
+            <div className="mb-3">
+              <label htmlFor="email" className="form-label">
+                Email
+              </label>
+              <input
+                type="email"
+                id="email"
+                name="email"
+                value={formData.email}
+                onChange={handleChange}
+                className="form-control"
+                placeholder="Enter your email"
+                required
+              />
+            </div>
 
-                <div className="mb-3">
-                  <label htmlFor="contactNumber" className="form-label">
-                    Contact Number
-                  </label>
-                  <input
-                    type="text"
-                    id="contactNumber"
-                    name="contactNumber"
-                    value={formData.contactNumber}
-                    onChange={handleChange}
-                    className="form-control"
-                    placeholder="Enter your contact number"
-                    required
-                  />
-                </div>
+            <div className="mb-3">
+              <label htmlFor="contactNumber" className="form-label">
+                Contact Number
+              </label>
+              <input
+                type="text"
+                id="contactNumber"
+                name="contactNumber"
+                value={formData.contactNumber}
+                onChange={handleChange}
+                className="form-control"
+                placeholder="Enter your contact number"
+                required
+              />
+            </div>
 
-                <div className="mb-3">
-                  <label htmlFor="purpose" className="form-label">
-                    Purpose of Work
-                  </label>
-                  <select
-                    id="purpose"
-                    name="purpose"
-                    value={formData.purpose}
-                    onChange={handleChange}
-                    className="form-select"
-                    required
-                  >
-                    <option value="">Our Valuable Services</option>
-                    <option value="DGPS">DGPS Survey</option>
-                    <option value="Boundary">Boundary Survey</option>
-                    <option value="Subdivision">Subdivision Survey</option>
-                    <option value="Contour">Contour Survey</option>
-                    <option value="Others">Others</option>
-                  </select>
-                </div>
+            <div className="mb-3">
+              <label htmlFor="purpose" className="form-label">
+                Purpose of Work
+              </label>
+              <select
+                id="purpose"
+                name="purpose"
+                value={formData.purpose}
+                onChange={handleChange}
+                className="form-select"
+                required
+              >
+                <option value="">Our Valuable Services</option>
+                <option value="DGPS">DGPS Survey</option>
+                <option value="Boundary">Boundary Survey</option>
+                <option value="Subdivision">Subdivision Survey</option>
+                <option value="Contour">Contour Survey</option>
+                <option value="Others">Others</option>
+              </select>
+            </div>
 
-                <div className="mb-3">
-                  <label htmlFor="district" className="form-label">
-                    District
-                  </label>
-                  <select
-                    id="district"
-                    name="district"
-                    value={formData.district}
-                    onChange={handleChange}
-                    className="form-select"
-                    required
-                  >
-                    <option value="">Select your district</option>
-                    {tamilNaduDistricts.map((district, index) => (
-                      <option key={index} value={district}>
-                        {district}
-                      </option>
-                    ))}
-                  </select>
-                </div>
+            <div className="mb-3">
+              <label htmlFor="district" className="form-label">
+                District
+              </label>
+              <select
+                id="district"
+                name="district"
+                value={formData.district}
+                onChange={handleChange}
+                className="form-select"
+                required
+              >
+                <option value="">Select your district</option>
+                {tamilNaduDistricts.map((district, index) => (
+                  <option key={index} value={district}>
+                    {district}
+                  </option>
+                ))}
+              </select>
+            </div>
 
-                <div className="text-center">
-                  <button type="submit" className="cus-btn btn w-100 mt-3">
-                    Submit
-                  </button>
-                </div>
-              </form>
+            <div className="mb-3 captcha-wrapper">
+              {/* <label htmlFor="captcha" className="form-label">
+                Captcha
+              </label> */}
+              <div className="input-group">
+                <input
+                  type="text"
+                  className="form-control bg-light text-center fw-bold"
+                  value={captcha}
+                  readOnly
+                  style={{ maxWidth: "150px" }}
+                />
+                <button
+                  type="button"
+                  className="btn btn-outline-secondary"
+                  onClick={() => setCaptcha(generateCaptcha())}
+                >
+                  Refresh
+                </button>
+              </div>
+              <input
+                type="text"
+                id="captcha"
+                name="captcha"
+                value={userCaptcha}
+                onChange={(e) => setUserCaptcha(e.target.value)}
+                className="form-control mt-2"
+                placeholder="Enter the captcha"
+                required
+              />
+            </div>
+
+            <div className="text-center">
+              <button type="submit" className="btn cus-btn w-100">
+                Submit
+              </button>
+            </div>
+          </form>
 
             </div>
           </div>
         </div>
       </section>
-      <div style={{ position: 'fixed', bottom: '20px', left: '20px' }}>
+
+      <div className='app' style={{ position: 'fixed' }}>
         <a href={whatsappUrl} target="_blank" rel="noopener noreferrer">
-          <FaWhatsapp size={50} color="#25D366" />
+          <FaWhatsapp size={30} color="#25D366" />
         </a>
+      </div>
+
+      <div className='back-to-top'>
+        <span>
+          <a href="#"><i class="bi bi-arrow-up"></i></a>
+        </span>
       </div>
 
 
@@ -626,10 +786,11 @@ function App() {
                 <div className='contact-box-wrapper mt-5'>
                   <div className='contact-box'>
                     <h6 className='mb-3'>Address</h6>
-                    <p>28,thachan thottam,
-                      7th North Street,
-                      Neelikonampalayam,
-                      coimbatore -641033</p>
+                    <a href='https://maps.app.goo.gl/dd8Bh2rzfEmx1ZN7A'>
+                      <p>28,thachan thottam,
+                        7th North Street,
+                        Neelikonampalayam,
+                        coimbatore -641033</p></a>
                   </div>
 
                   <div className='contact-box'>
@@ -659,6 +820,7 @@ function App() {
           </div>
         </div>
       </footer>
+
     </>
 
   );
